@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main.html}">
+<div layout:fragment="content">
+    <h2 class="mt-3"> All Cars</h2>
+
+    <table class="table table-striped table-hover mt-3">
+        <thead>
+        <tr>
+            <td>ID</td>
+            <td>Name(Brand)</td>
+            <td>Model</td>
+            <td>Year of manufacture</td>
+            <td>Price</td>
+            <td>Country-manufacturer</td>
+            <td>View</td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="car:${cars}">
+            <td th:text="${car.id}"></td>
+            <td th:text="${car.name}"></td>
+            <td th:text="${car.model}"></td>
+            <td th:text="${car.year}"></td>
+            <td th:text="${car.price}"></td>
+            <td>
+                <span th:if="${car.country!=null}" th:text="${car.country.name + '/' + car.country.code}"></span>
+                <i class="text-secondary" th:if="${car.country==null}">UNKNOWN</i>
+            </td>
+            <td><a class="btn btn-primary" th:href="@{'/car-view/'+${car.id}}">View</a></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</html>

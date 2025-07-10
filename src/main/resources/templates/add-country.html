@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main.html}">
+
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-6">
+            <form method="post" th:action="@{/add-country}" class="mt-5 px-3 py-3 card">
+                <h2 class="mt-3 text-center">Add Country</h2>
+                <div class="form-floating mt-3">
+                    <input type="text" class="form-control" id="country_name" name="name" placeholder="country_name">
+                    <label for="country_name">Name</label>
+                </div>
+                <div class="form-floating mt-3">
+                    <input type="text" class="form-control" id="country_code" name="code" placeholder="country_code">
+                    <label for="country_code">Code</label>
+                </div>
+                <button class="btn btn-success mt-3" type="submit">SAVE</button>
+            </form>
+        </div>
+    </div>
+</div>
+</html>

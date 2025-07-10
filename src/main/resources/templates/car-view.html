@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main.html}">
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-6">
+            <form method="post" th:action="@{/update-car}" class="mt-5 px-3 py-3 card">
+                <h2 class="mt-2 text-center"> Edit Car</h2>
+                <input type="hidden" name="id" th:value="${car.id}">
+                <div class="form-floating mt-3">
+                    <input type="text" id="car_name" th:value="${car.name}" class="form-control" name="name"
+                           placeholder="car_name" required>
+                    <label for="car_name">Name(Brand)</label>
+                </div>
+                <div class="form-floating mt-3">
+                    <input type="text" id="car_model" th:value="${car.model}" class="form-control" name="model"
+                           placeholder="car_model"
+                           required>
+                    <label for="car_model">Model</label>
+                </div>
+                <div class="form-floating mt-3">
+                    <input type="number" id="car_year" th:value="${car.year}" class="form-control" name="year"
+                           placeholder="car_year" required>
+                    <label for="car_year">Year of manufacture</label>
+                </div>
+                <div class="form-floating mt-3">
+                    <input type="number" id="car_price" th:value="${car.price}" class="form-control" name="price"
+                           placeholder="car_price"
+                           required>
+                    <label for="car_price">Price</label>
+                </div>
+                <div class="form-floating mt-3">
+                    <select class="form-select" name="car_country" id="car_country" th:placeholder="car_country">
+                        <option th:each="co: ${countries}" th:selected="${car.country!=null && co.id.equals(car.country.id)}" th:text="${co.name+'/'+co.code}" th:value="${co.id}"></option>
+                    </select>
+                    <label for="car_country">Country-manufacturer</label>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success mt-3" style="margin-right: 1%">SAVE</button>
+                    <button type="button" onclick="deleteCar()" class="btn btn-danger mt-3">DELETE</button>
+                </div>
+            </form>
+            <form method="post" th:action="@{/delete-car}" id="deleteCar">
+                <input type="hidden" name="id" th:value="${car.id}">
+            </form>
+        </div>
+        <div class="col-3"></div>
+    </div>
+
+    <script type="text/javascript">
+        function deleteCar() {
+            conf = confirm("Are you sure?");
+            if (conf) {
+                document.getElementById("deleteCar").submit();
+            }
+        }
+    </script>
+</div>
+
+</html>
