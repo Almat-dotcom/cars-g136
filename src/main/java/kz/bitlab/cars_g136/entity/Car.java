@@ -2,6 +2,9 @@ package kz.bitlab.cars_g136.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.scheduling.annotation.Scheduled;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -27,7 +30,15 @@ public class Car {
     @Column(name = "price")
     private double price;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "country_id")
     private Country country;
+
+    @ManyToMany
+    @JoinTable(
+            name = "cars_categories",
+            joinColumns = @JoinColumn(name = "car_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private List<Category> categories;
 }

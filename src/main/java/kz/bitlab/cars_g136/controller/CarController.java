@@ -1,8 +1,10 @@
 package kz.bitlab.cars_g136.controller;
 
 import kz.bitlab.cars_g136.entity.Car;
+import kz.bitlab.cars_g136.entity.Category;
 import kz.bitlab.cars_g136.entity.Country;
 import kz.bitlab.cars_g136.repository.CarRepository;
+import kz.bitlab.cars_g136.repository.CategoryRepository;
 import kz.bitlab.cars_g136.repository.CountryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
@@ -20,7 +22,7 @@ import java.util.List;
 public class CarController {
     private final CarRepository carRepository;
     private final CountryRepository countryRepository;
-    //CRUD
+    private final CategoryRepository categoryRepository;
 
     @GetMapping("/")
     public String start(Model model) {
@@ -57,9 +59,11 @@ public class CarController {
     public String carView(Model model,
                           @PathVariable Long id) {
         Car car = carRepository.findById(id).orElse(null);
+        List<Category> categories = categoryRepository.findAllByCarsNotContaining(car);
         List<Country> countries = countryRepository.findAll();
         model.addAttribute("car", car);
         model.addAttribute("countries", countries);
+        model.addAttribute("categories", categories);
         return "car-view";
     }
 
@@ -89,5 +93,31 @@ public class CarController {
     public String deleteCar(@RequestParam(name = "id") Long id) {
         carRepository.deleteById(id);
         return "redirect:/";
+    }
+
+    @PostMapping("/assign-category")
+    public String assignCategory(@RequestParam(name = "carId") Long carId,
+                                 @RequestParam(name = "categoryId") Long categoryId) {
+        Car car = carRepository.findById(carId).orElse(null);
+        Category category = categoryRepository.findById(categoryId).orElse(null);
+        if (car == null || category == null) {
+            return "reirect:/";
+        }
+        car.getCategories().add(category);
+        carRepository.save(car);
+        return "redirect:/car-view/" + carId;
+    }
+
+    @PostMapping("/remove-category")
+    public String unassignCategory(@RequestParam(name = "carId") Long carId,
+                                   @RequestParam(name = "categoryId") Long categoryId) {
+        Car car = carRepository.findById(carId).orElse(null);
+        Category category = categoryRepository.findById(categoryId).orElse(null);
+        if (car == null || category == null) {
+            return "reirect:/";
+        }
+        car.getCategories().remove(category);
+        carRepository.save(car);
+        return "redirect:/car-view/" + carId;
     }
 }
