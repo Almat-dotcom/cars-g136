@@ -1,5 +1,7 @@
 package kz.bitlab.cars_g136.controller;
 
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
 import kz.bitlab.cars_g136.entity.Car;
 import kz.bitlab.cars_g136.entity.Category;
 import kz.bitlab.cars_g136.entity.Country;
@@ -8,6 +10,7 @@ import kz.bitlab.cars_g136.repository.CategoryRepository;
 import kz.bitlab.cars_g136.repository.CountryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -25,9 +29,55 @@ public class CarController {
     private final CategoryRepository categoryRepository;
 
     @GetMapping("/")
-    public String start(Model model) {
-        List<Car> cars = carRepository.findAll();
+    public String start(Model model,
+                        @RequestParam(name = "year", required = false) Integer year,
+                        @RequestParam(name = "name", required = false) String name,
+                        @RequestParam(name = "price", required = false) Double price,
+                        @RequestParam(name = "country_id", required = false) Long countryId,
+                        @RequestParam(name = "category_id", required = false) Long categoryId) {
+        List<Car> cars = new ArrayList<>();
+//        if (year != null && (name == null || name.isBlank())) {
+//            cars = carRepository.findAllByYear(year);
+//        } else if (year == null && name != null) {
+//            cars = carRepository.findAllByNameCustom(name);
+////            cars= carRepository.findAllByNameContainsIgnoreCase(name);
+//
+//        } else if (year != null && name != null) {
+//
+//            cars = carRepository.findAllByCustomParam(year, name);
+////            cars = carRepository.findAllByYearAndNameContainsIgnoreCase(year, name);
+//        } else {
+//            cars = carRepository.findAll();
+//        }
+        // -----------------------------------
+        Specification<Car> carSpecification = (root, criteriaQuery, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (year != null) {
+                predicates.add(criteriaBuilder.equal(root.get("year"), year));
+            }
+            if (name != null && !name.isEmpty()) {
+                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + name.toLowerCase() + "%"));
+            }
+            if (price != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("price"), price));
+            }
+            if (countryId != null) {
+                Join<Car, Country> countryJoin = root.join("country");
+                predicates.add(criteriaBuilder.equal(countryJoin.get("id"), countryId));
+            }
+            if (categoryId != null) {
+                Join<Car, Category> categoryJoin = root.join("categories");
+                predicates.add(criteriaBuilder.equal(categoryJoin.get("id"), categoryId));
+            }
+            Predicate commonPredicate = criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+            return commonPredicate;
+        };
+        cars = carRepository.findAll(carSpecification);
+        model.addAttribute("chosenCountryId", countryId);
+        model.addAttribute("chosenCategoryId", categoryId);
         model.addAttribute("cars", cars);
+        model.addAttribute("countries", countryRepository.findAll());
+        model.addAttribute("categories", categoryRepository.findAll());
         return "start";
     }
 
