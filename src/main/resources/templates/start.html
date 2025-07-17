@@ -2,14 +2,37 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/main.html}">
 <div layout:fragment="content">
-
     <form method="get" class="d-flex mt-3" th:action="@{'/'}">
-        <div class="form-floating me-3">
-            <input type="number" class="form-control" id="year" name="year" placeholder="year" th:value="${param.year}">
+        <div class="row">
+            <div class="form-floating me-3 mt-3">
+                <select class="form-select" id="sort_by" aria-label="sort_by" name="sort">
+                    <option value="name">Name</option>
+                    <option value="year">Year</option>
+                    <option value="price">Price</option>
+                </select>
+                <label for="sort_by">Sort by:</label>
+            </div>
+            <div class="form-floating me-3 mt-3">
+                <select class="form-select" id="sort_order" aria-label="sort_order" name="sort_order">
+                    <option value="ASC">Ascending</option>
+                    <option value="DESC">Descending</option>
+                </select>
+                <label for="sort_order">Order:</label>
+            </div>
+            <div class="form-floating me-3 mt-3">
+                <input type="text" class="form-control" id="size" name="size" placeholder="size"
+                       th:value="${param.size}">
+                <label for="size">Page size:</label>
+            </div>
+        </div>
+        <div class="form-floating me-3 pl-3">
+            <input type="number" class="form-control" id="year" name="year" placeholder="year"
+                   th:value="${param.year}">
             <label for="year">Year of manufacture</label>
         </div>
         <div class="form-floating me-3">
-            <input type="text" class="form-control" id="name" name="name" placeholder="name" th:value="${param.name}">
+            <input type="text" class="form-control" id="name" name="name" placeholder="name"
+                   th:value="${param.name}">
             <label for="name">Name(Brand)</label>
         </div>
         <div class="form-floating me-3">
@@ -66,5 +89,23 @@
         </tr>
         </tbody>
     </table>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+            <li th:class="${currentPage == 0 ? 'page-item disabled' : 'page-item'}">
+                <a class="page-link" th:href="@{'/?page='+${currentPage - 1}}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <li th:each="pageNum:${pageNumbers}" class="page-item">
+                <a th:class="${pageNum==currentPage ? 'page-link active':'page-link'}" th:href="@{'/?'}"
+                   th:text="${pageNum+1}">
+                </a></li>
+            <li th:class="${currentPage == (pageSize - 1) ? 'page-item disabled' : 'page-item'}">
+                <a class="page-link" th:href="@{'/?page='+${currentPage + 1}}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
 </div>
 </html>
