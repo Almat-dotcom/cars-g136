@@ -97,7 +97,7 @@
                 </a>
             </li>
             <li th:each="pageNum:${pageNumbers}" class="page-item">
-                <a th:class="${pageNum==currentPage ? 'page-link active':'page-link'}" th:href="@{'/?'}"
+                <a th:class="${pageNum==currentPage ? 'page-link active':'page-link'}" th:href="@{'/?page=' + ${pageNum} + '&size=' + ${pageSize}}"
                    th:text="${pageNum+1}">
                 </a></li>
             <li th:class="${currentPage == (pageSize - 1) ? 'page-item disabled' : 'page-item'}">
